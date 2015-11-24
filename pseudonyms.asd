@@ -1,4 +1,4 @@
-;;;; phoe-nicknames.asd
+;;;; pseudonyms.asd
 
 (asdf:defsystem #:pseudonyms
   :description "Relative package nicknames through macros"
