@@ -51,7 +51,7 @@ pseudonyms for current package (as shown by the *package* global variable).
 
 (defparameter *pseudonym-table*
   (make-weak-hash-table :test #'equal :weakness :key)
-  "This is a global package-name-indexed hashtable holdingname-pseudonym
+  "This is a global package-name-indexed hashtable holding name-pseudonym
 plists.")
 
 ;;; ========================================================================
