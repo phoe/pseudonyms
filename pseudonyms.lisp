@@ -15,8 +15,7 @@
 
 (defparameter *pseudonym-table*
   (make-weak-hash-table :test #'equal :weakness :key)
-  "This is a global package-name-indexed hashtable holding name-pseudonym
-plists.")
+  "This is a global package-name-indexed hashtable holding name-pseudonym plists.")
 
 ;;; ========================================================================
 ;;; HELPER FUNCTIONS AND TYPES
@@ -24,16 +23,16 @@ plists.")
 (deftype string-designator () '(or string symbol character))
 
 (defun string=-getf (plist indicator)
-  "This is a version of getf utilizing string= for comparison.
-Given a plist and a key, returns a value."
+  "This is a version of getf utilizing string= for comparison. Given a plist and a key, returns
+a value."
   (loop for key in plist by #'cddr
      for value in (rest plist) by #'cddr
      when (string= key indicator)
      return value))
 
 (defun string=-getf-key (plist indicator)
-  "This is a version of getf utilizing string= for comparison.
-Given a plist and a value, returns a key."
+  "This is a version of getf utilizing string= for comparison. Given a plist and a value,
+returns a key."
   (loop for key in plist by #'cddr
      for value in (rest plist) by #'cddr
      when (string= value indicator)
@@ -43,19 +42,16 @@ Given a plist and a value, returns a key."
 ;;; DEFINE/UNDEFINE FUNCTIONS
 
 (defun defpseudonym (raw-name raw-pseudonym &key (package (package-name *package*)))
-  "This, given a package name and a pseudonym for it, allows you
-to use a local pseudonym in form $pseudonym:symbol instead of
-name:symbol within your code. This pseudonym is local to the package
-you called defpseudonym in (as shown by the global variable
-*PACKAGE*).
+  "This, given a package name and a pseudonym for it, allows you to use a local pseudonym in
+form $pseudonym:symbol instead of name:symbol within your code. This pseudonym is local to the
+package you called defpseudonym in (as shown by the global variable *PACKAGE*).
 
 Arguments must be a pair of non-empty non-equal string designators.
 An optional argument allows you to set a pseudonym for a different package.
 
 Pseudonyms are always converted to lowercase.
 
-This will signal an error whenever a nickname or pseudonym is
-already taken."
+This will signal an error whenever a nickname or pseudonym is already taken."
   (check-type raw-name string-designator)
   (check-type raw-pseudonym string-designator)
   (let* ((table (gethash (string-downcase package) *pseudonym-table*))
@@ -84,12 +80,11 @@ already taken."
     (format nil "~A => ~A" pseudonym name)))
 
 (defun pmakunbound (datum &key (package (package-name *package*)))
-  "This, given either a nickname-bound package name or a
-package name-bound nickname, clears any name-nickname pair bound to it.
+  "This, given either a nickname-bound package name or a package name-bound nickname, clears
+any name-nickname pair bound to it.
 
 Argument must be a string designator.
-An optional argument allows you to clear a pseudonym from a different
-package."
+An optional argument allows you to clear a pseudonym from a different package."
   (check-type datum string-designator)
   (let ((table (gethash (string-downcase package) *pseudonym-table*)))
     (setf datum (string-downcase datum)
@@ -104,8 +99,7 @@ package."
 
 (defun print-pseudonyms (&key (package (package-name *package*)))
   "This prints all pseudonyms in a fancy manner.
-Optional argument designates the package name, from inside which 
-pseudonyms should be printed."
+Optional argument designates the package name, from inside which pseudonyms should be printed."
   (check-type package string-designator)
   (let* ((string (string-downcase package))
 	 (table (gethash string *pseudonym-table*)))
