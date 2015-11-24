@@ -58,7 +58,7 @@ This will signal an error whenever a nickname or pseudonym is
 already taken."
   (check-type raw-name string-designator)
   (check-type raw-pseudonym string-designator)
-  (let* ((table (gethash (string-downcase pkgname) *pseudonym-table*))
+  (let* ((table (gethash (string-downcase package) *pseudonym-table*))
 	 (name (string-downcase raw-name))
 	 (pseudonym (string-downcase raw-pseudonym))
 	 (first (car table)))
@@ -77,7 +77,7 @@ already taken."
 	    "This pseudonym is already taken by name ~S."
 	    (string=-getf-key table pseudonym))
     (if (null table)
-	(setf (gethash (string-downcase pkgname) *pseudonym-table*)
+	(setf (gethash (string-downcase package) *pseudonym-table*)
 	      (cons name (cons pseudonym nil)))
 	(setf (car table) name
 	      (cdr table) (cons pseudonym (cons first (cdr table)))))
@@ -91,13 +91,13 @@ Argument must be a string designator.
 An optional argument allows you to clear a pseudonym from a different
 package."
   (check-type datum string-designator)
-  (let ((table (gethash (string-downcase pkgname) *pseudonym-table*)))
+  (let ((table (gethash (string-downcase package) *pseudonym-table*)))
     (setf datum (string-downcase datum)
 	  table
 	  (loop for (key value) on table by #'cddr
 	     unless (or (equal key datum) (equal value datum))
 	     collect key and collect value)))
-  datum)
+  (string-downcase datum))
 
 ;;; ========================================================================
 ;;; UTILITIES
@@ -106,13 +106,13 @@ package."
   "This prints all pseudonyms in a fancy manner.
 Optional argument designates the package name, from inside which 
 pseudonyms should be printed."
-  (check-type pkgname string-designator)
-  (let* ((string (string-downcase pkgname))
+  (check-type package string-designator)
+  (let* ((string (string-downcase package))
 	 (table (gethash string *pseudonym-table*)))
     (if (null table)
-	(format t "No pseudonyms defined for package ~:@(~A~).~%" pkgname)
+	(format t "No pseudonyms defined for package ~:@(~A~).~%" package)
 	(progn
-	  (format t "pseudonym => name (package ~:@(~A~)):~%" pkgname)
+	  (format t "pseudonym => name (package ~:@(~A~)):~%" package)
 	  (list-length
 	   (loop for (key value) on table by #'cddr collecting key
 	      do (format t "~S => ~S~%" value key)))))))
