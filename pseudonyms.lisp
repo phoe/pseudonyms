@@ -42,7 +42,7 @@ Given a plist and a value, returns a key."
 ;;; ========================================================================
 ;;; DEFINE/UNDEFINE FUNCTIONS
 
-(defun defpseudonym (raw-name raw-pseudonym &key (pkgname (package-name *package*)))
+(defun defpseudonym (raw-name raw-pseudonym &key (package (package-name *package*)))
   "This, given a package name and a pseudonym for it, allows you
 to use a local pseudonym in form $pseudonym:symbol instead of
 name:symbol within your code. This pseudonym is local to the package
@@ -83,7 +83,7 @@ already taken."
 	      (cdr table) (cons pseudonym (cons first (cdr table)))))
     (format nil "~A => ~A" pseudonym name)))
 
-(defun pmakunbound (datum &key (pkgname (package-name *package*)))
+(defun pmakunbound (datum &key (package (package-name *package*)))
   "This, given either a nickname-bound package name or a
 package name-bound nickname, clears any name-nickname pair bound to it.
 
@@ -102,7 +102,7 @@ package."
 ;;; ========================================================================
 ;;; UTILITIES
 
-(defun print-pseudonyms (&key (pkgname (package-name *package*)))
+(defun print-pseudonyms (&key (package (package-name *package*)))
   "This prints all pseudonyms in a fancy manner.
 Optional argument designates the package name, from inside which 
 pseudonyms should be printed."
