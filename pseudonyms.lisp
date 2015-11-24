@@ -125,18 +125,19 @@ pseudonyms should be printed."
 (defun pseudonym-reader (stream char)
   "This is the reader macro for local pseudonyms."
   (declare (ignore char))
-  (let* ((table (gethash (package-name *package*) *pseudonym-table*))
+  (let* ((table (gethash (string-downcase (package-name *package*)) *pseudonym-table*))
 	 (pseudlist (loop for char = (read-char stream)
 		       collect char
 		       until (equal (peek-char nil stream) #\:)))
 	 (pseudonym (string-downcase (concatenate 'string pseudlist)))
 	 (name (string=-getf-key table pseudonym))
 	 (symbol (read stream)))
+    ;;(format t "debug: ~A ~A ~A ~A ~A ~A~%"
+    ;;(string-downcase (package-name *package*))
+    ;;pseudlist pseudonym table name symbol)
     (assert (not (null name)) ()
 	    "Pseudonym ~S was not set. Check your spelling or use defpseudonym."
 	    pseudonym)
-    ;;(format t "debug: ~A ~A ~A ~A ~A~%"
-    ;;(package-name *package*) pseudlist pseudonym name symbol)
     (read-from-string (format nil "~A:~A" name symbol))))
 
 ;; todo: named readtables
