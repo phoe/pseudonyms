@@ -42,7 +42,7 @@ Given a plist and a value, returns a key."
 ;;; ========================================================================
 ;;; DEFINE/UNDEFINE FUNCTIONS
 
-(defun defpseudonym (raw-name raw-pseudonym &optional (pkgname (package-name *package*)))
+(defun defpseudonym (raw-name raw-pseudonym &key (pkgname (package-name *package*)))
   "This, given a package name and a pseudonym for it, allows you
 to use a local pseudonym in form $pseudonym:symbol instead of
 name:symbol within your code. This pseudonym is local to the package
@@ -58,7 +58,7 @@ This will signal an error whenever a nickname or pseudonym is
 already taken."
   (check-type raw-name string-designator)
   (check-type raw-pseudonym string-designator)
-  (let* ((table (gethash pkgname *pseudonym-table*))
+  (let* ((table (gethash (string-downcase pkgname) *pseudonym-table*))
 	 (name (string-downcase raw-name))
 	 (pseudonym (string-downcase raw-pseudonym))
 	 (first (car table)))
@@ -77,13 +77,13 @@ already taken."
 	    "This pseudonym is already taken by name ~S."
 	    (string=-getf-key table pseudonym))
     (if (null table)
-	(setf (gethash pkgname *pseudonym-table*)
+	(setf (gethash (string-downcase pkgname) *pseudonym-table*)
 	      (cons name (cons pseudonym nil)))
 	(setf (car table) name
 	      (cdr table) (cons pseudonym (cons first (cdr table)))))
     (format nil "~A => ~A" pseudonym name)))
 
-(defun pmakunbound (datum &optional (pkgname (package-name *package*)))
+(defun pmakunbound (datum &key (pkgname (package-name *package*)))
   "This, given either a nickname-bound package name or a
 package name-bound nickname, clears any name-nickname pair bound to it.
 
@@ -91,7 +91,7 @@ Argument must be a string designator.
 An optional argument allows you to clear a pseudonym from a different
 package."
   (check-type datum string-designator)
-  (let ((table (gethash pkgname *pseudonym-table*)))
+  (let ((table (gethash (string-downcase pkgname) *pseudonym-table*)))
     (setf datum (string-downcase datum)
 	  table
 	  (loop for (key value) on table by #'cddr
@@ -102,19 +102,20 @@ package."
 ;;; ========================================================================
 ;;; UTILITIES
 
-(defun print-pseudonyms (&optional (pkgname (package-name *package*)))
+(defun print-pseudonyms (&key (pkgname (package-name *package*)))
   "This prints all pseudonyms in a fancy manner.
 Optional argument designates the package name, from inside which 
 pseudonyms should be printed."
-  (check-type pkgname string)
-  (let ((table (gethash (package-name *package*) *pseudonym-table*)))
-    (if(null table)
-       (format t "No pseudonyms defined for package ~:@(~A~).~%" pkgname)
-       (progn
-	 (format t "pseudonym => name (package ~:@(~A~)):~%" pkgname)
-	 (list-length
-	  (loop for (key value) on table by #'cddr collecting key
-	     do (format t "~S => ~S~%" value key)))))))
+  (check-type pkgname string-designator)
+  (let* ((string (string-downcase pkgname))
+	 (table (gethash string *pseudonym-table*)))
+    (if (null table)
+	(format t "No pseudonyms defined for package ~:@(~A~).~%" pkgname)
+	(progn
+	  (format t "pseudonym => name (package ~:@(~A~)):~%" pkgname)
+	  (list-length
+	   (loop for (key value) on table by #'cddr collecting key
+	      do (format t "~S => ~S~%" value key)))))))
 
 ;;; ========================================================================
 ;;; READER MACRO
