@@ -40,7 +40,7 @@ defined within CL-USER are not usable anywhere outside the CL-USER package.
 
 An utility function print-pseudonyms will print all pseudonyms for a given
 package. If not supplied a package name as an argument, it will print all
-pseudonyms for current package (as shown by the *package* global variable.
+pseudonyms for current package (as shown by the *package* global variable).
 
 |#
 
