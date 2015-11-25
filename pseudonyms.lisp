@@ -138,7 +138,6 @@ Optional argument designates the package name, from inside which pseudonyms shou
 	      () "Pseudonym ~S was not set. Check your spelling or use defpseudonym."
 	      pseudonym)
       (assert (or intern-p
-		  (find-symbol (string symbol) name)
 		  (equal :external (nth-value 1 (find-symbol (string symbol) name))))
 	      () "Symbol ~S is not found or not external in the ~A package."
 	      (string symbol) (string name))
