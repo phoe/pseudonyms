@@ -145,15 +145,20 @@ This function is not meant to be called explicitly, unless you know what you're 
 ;;; ========================================================================
 ;;; NAMED READTABLE
 
+(defreadtable :pseudonyms
+  (:merge :modern)
+  (:macro-char #\$ #'pseudonym-reader t))
 (let* ((current-char #\$)
-       (rt (defreadtable :pseudonyms
-	     (:merge :modern)
-	     (:macro-char current-char #'pseudonym-reader t))))
+       (rt (find-readtable :pseudonyms)))
   (defun set-pseudonym-macro-character (char)
     "Sets the macro character for nickname resolution. By default, it is set to #\$."
     (check-type char character)
     (set-macro-character current-char nil t rt)
     (set-macro-character char #'pseudonym-reader t rt)))
-(in-readtable :pseudonyms)
+
+(defun pseudonyms-on ()
+  "Gimme some sugar, baby."
+  (use-package :pseudonyms)
+  (in-readtable :pseudonyms))
 
 ;;;; EOF
