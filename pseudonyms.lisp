@@ -134,13 +134,18 @@ Optional argument designates the package name, from inside which pseudonyms shou
       ;;(format t "debug: ~S ~S ~S ~S ~S ~S ~S~%"
       ;;(package-name *package*) pseudlist table name pseudonym symbol intern-p)
       ;;(format t "debug: ~S ~S ~S~%" symbol name intern-p)
-      (assert (not (null name)) ()
-	      "Pseudonym ~S was not set. Check your spelling or use defpseudonym."
+      (assert (not (null name))
+	      () "Pseudonym ~S was not set. Check your spelling or use defpseudonym."
 	      pseudonym)
-      (if (or intern-p (find-symbol (string symbol) name))
-	  (intern (string symbol) name)
-	  (error "Symbol ~S not found in the ~A package."
-		 (string symbol) (string name))))))
+      (assert (or intern-p
+		  (find-symbol (string symbol) name))
+	      () "Symbol ~S not found in the ~A package."
+	      (string symbol) (string name))
+      (assert (or intern-p
+		  (equal :external (nth-value 1 (find-symbol (string symbol) name))))
+	      () "Symbol ~S is not external in the ~A package."
+	      (string symbol) (string name))
+      (intern (string symbol) name))))
 
 ;; todo: named readtables
 ;; todo: customizable macro character?
