@@ -159,6 +159,7 @@ This function is not meant to be called explicitly, unless you know what you're 
 (defun pseudonyms-on ()
   "Gimme some sugar, baby."
   (use-package :pseudonyms)
-  (in-readtable :pseudonyms))
+  (in-readtable :pseudonyms)
+  'OH-YEAH)
 
 ;;;; EOF
