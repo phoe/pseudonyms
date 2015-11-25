@@ -11,12 +11,12 @@ The solution I provide here is a different approach to nicknames that does not u
 
 Pseudonyms, in opposition to nicknames, can be defined by the user inside one's code, like this:
 ```common-lisp
-> (defpseudonym "longpackagename" "lpn")
+> (defpseudonym :longpackagename "lpn")
 ```
 
 And removed like this:
 ```common-lisp
-> (pmakunbound "lpn") ;; OR (pmakunbound "longpackagename")
+> (pmakunbound "lpn") ;; OR (pmakunbound :longpackagename)
 ```
 
 From within the code, one can refer to a pseudonymized package this way:
@@ -24,6 +24,11 @@ From within the code, one can refer to a pseudonymized package this way:
 > $lpn:something
 ```
 A reader macro will automatically translate it to its normal version of `longpackagename:something.` This is usable both within the REPL and within usual code.
+
+The reader macro character is also settable:
+```common-lisp
+> (set-pseudonym-macro-character #\^)
+```
 
 All pseudonyms are local to the current package: for instance, pseudonyms defined within CL-USER are not usable anywhere outside the CL-USER package.
 
