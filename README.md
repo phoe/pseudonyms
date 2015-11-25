@@ -9,6 +9,11 @@ will count here.
 
 The solution I provide here is a different approach to nicknames that does not use any of the original nickname code, as defined in CLHS.
 
+To begin quickly:
+```common-lisp
+> (pseudonyms:pseudonyms-on)
+```
+
 Pseudonyms, in opposition to nicknames, can be defined by the user inside one's code, like this:
 ```common-lisp
 > (defpseudonym :longpackagename "lpn")
@@ -25,7 +30,7 @@ From within the code, one can refer to a pseudonymized package this way:
 ```
 A reader macro will automatically translate it to its normal version of `longpackagename:something.` This is usable both within the REPL and within usual code.
 
-The reader macro character is also settable:
+The reader macro character is also settable from the default #\$:
 ```common-lisp
 > (set-pseudonym-macro-character #\^)
 ```
