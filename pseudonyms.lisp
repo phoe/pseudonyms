@@ -1,9 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; pseudonyms
+;;;; PSEUDONYMS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; thanks to:
-;;;; #lisp@freenode: pjb, blubjr, sid_cypher, PuercoPop, shka
+;;;; #lisp@freenode:
+;;;; pjb, blubjr, sid_cypher, PuercoPop, shka, Bicyclidine
 ;;;; for testing and ideas
+;;;; 
 ;;;; license: FreeBSD (BSD 2-clause)
 ;;;;
 ;;;; pseudonyms.lisp
@@ -46,19 +48,19 @@ returns a key."
 form $pseudonym:symbol instead of name:symbol within your code. This pseudonym is local to the
 package you called defpseudonym in (as shown by the global variable *PACKAGE*).
 
-Arguments must be a pair of non-empty non-equal string designators.
-An optional argument allows you to set a pseudonym for a different package.
-
-Pseudonyms are always converted to lowercase.
+Arguments must be a pair of non-empty non-equal string designators, although I suggest using
+a lowercase string for the second argument.
+An optional third argument allows you to set a pseudonym for a different package.
 
 This will signal an error whenever a nickname or pseudonym is already taken."
   (check-type package string-designator)
-  (check-type pseudonym string)
+  (check-type pseudonym string-designator)
   (check-type inside-package string-designator)
   (assert (not (member "" (list package pseudonym inside-package) :test #'string=))
 	  (package pseudonym inside-package)
 	  "Arguments may not be empty strings.")
   (let* ((table (gethash inside-package *pseudonym-table*))
+	 (pseudonym (string pseudonym))
 	 (first (car table))
 	 (package (string package))
 	 (inside-package (string inside-package)))
@@ -78,11 +80,11 @@ This will signal an error whenever a nickname or pseudonym is already taken."
     (format nil "~A => ~A" pseudonym  package)))
 
 (defun pmakunbound (datum &key (inside-package (package-name *package*)))
-  "This, given either a nickname-bound package name or a package name-bound nickname, clears
-any name-nickname pair bound to it.
+  "This, given either a pseudonym-bound package name or a package name-bound pseudonym, clears
+any name-pseudonym pair bound to it.
 
 Argument must be a string designator.
-An optional argument allows you to clear a pseudonym from a different package."
+An optional second argument allows you to clear a pseudonym for a different package."
   (check-type datum string-designator)
   (let ((table (gethash inside-package *pseudonym-table*))
 	(datum (string datum)))
@@ -105,16 +107,16 @@ Optional argument designates the package name, from inside which pseudonyms shou
 	(progn
 	  (format t "pseudonym => name (inside package ~:@(~A~)):~%" inside-package)
 	  (list-length
-	   (loop for (key value) on table by #'cddr collecting key
+	   (loop for (key value) on table by #'cddr collect key
 	      do (format t "~S => ~S~%" value key)))))))
 
 ;;; ========================================================================
 ;;; READER MACRO
 
-(set-macro-character #\$ 'pseudonym-reader)
-
 (defun pseudonym-reader (stream char)
-  "This is the reader macro for local pseudonyms."
+  "This is the reader macro for local pseudonyms.
+
+This function is not meant to be called explicitly, unless you know what you're doing."
   (declare (ignore char))
   (labels ((valid (char)
 	     (when (equal char (or #\Space #\Tab #\Return #\Newline))
@@ -131,9 +133,6 @@ Optional argument designates the package name, from inside which pseudonyms shou
 					   do (read-char stream)
 					   collect char))))
 	   (symbol (read stream)))
-      ;;(format t "debug: ~S ~S ~S ~S ~S ~S ~S~%"
-      ;;(package-name *package*) pseudlist table name pseudonym symbol intern-p)
-      ;;(format t "debug: ~S ~S ~S~%" symbol name intern-p)
       (assert (not (null name))
 	      () "Pseudonym ~S was not set. Check your spelling or use defpseudonym."
 	      pseudonym)
@@ -143,6 +142,18 @@ Optional argument designates the package name, from inside which pseudonyms shou
 	      (string symbol) (string name))
       (intern (string symbol) name))))
 
-;; todo: named readtables
-;; todo: customizable macro character?
-;; DONE: fix : / :: issue
+;;; ========================================================================
+;;; NAMED READTABLE
+
+(let* ((current-char #\$)
+       (rt (defreadtable :pseudonyms
+	     (:merge :modern)
+	     (:macro-char current-char #'pseudonym-reader t))))
+  (defun set-pseudonym-macro-character (char)
+    "Sets the macro character for nickname resolution. By default, it is set to #\$."
+    (check-type char character)
+    (set-macro-character current-char nil t rt)
+    (set-macro-character char #'pseudonym-reader t rt)))
+(in-readtable :pseudonyms)
+
+;;;; EOF
