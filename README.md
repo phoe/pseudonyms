@@ -30,7 +30,7 @@ From within the code, one can refer to a pseudonymized package this way:
 ```
 A reader macro will automatically translate it to its normal version of `longpackagename:something.` This is usable both within the REPL and within usual code.
 
-The reader macro character is also settable from the default #\$:
+The reader macro character is also settable from the default `#\$`:
 ```common-lisp
 > (set-pseudonym-macro-character #\^)
 ```
