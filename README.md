@@ -1,5 +1,12 @@
 # pseudonyms
+
 #### A reader-macro way to create non-destructive nicknames within portable Common Lisp
+
+## Usage
+
+**DON'T USE.** Use [package-local nicknames](https://github.com/phoe/trivial-package-local-nicknames) instead.
+
+## Readme
 
 I found that Lisp nicknames, as defined in CLHS, have a few problems that I
 will count here.
